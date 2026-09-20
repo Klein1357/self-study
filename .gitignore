@@ -1,0 +1,48 @@
+# ---- 隐私 / 本机配置，绝不提交 ----
+.dsh-backup/
+.dsh-插件说明/
+.ov-docs/
+.cache/
+.dsh-icon2/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ---- 数据 / 大文件（按需自行放开）----
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.mp4
+*.iso
+
+# ---- 编辑器 / IDE ----
+.vscode/
+.idea/
+*.swp
+
+# ---- 操作系统 ----
+Thumbs.db
+Desktop.ini
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ---- 密钥 / 凭据 ----
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.*
