@@ -33,6 +33,17 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 
+# ---------------------------------------------------------------- 终端编码
+# Windows 控制台默认是 GBK（cp936），而本脚本要输出 ✓ ✗ ⊘ ⏱ 这些非 ASCII 符号。
+# 不重配的话，一旦检测到缺依赖就会在打印 ✗ 时抛 UnicodeEncodeError 直接崩溃 ——
+# 偏偏是在最需要这份报告的时候。这里统一把标准流切到 UTF-8，编码不了就降级替换。
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError, ValueError):
+        pass  # 老解释器或已被重定向/包装的流不支持重配，忽略即可
+
+
 # ---------------------------------------------------------------- 依赖清单
 # 每个库标注「用途 + 缺了会影响哪些阶段」，这样检出缺失时报错是有信息量的，
 # 而不是干巴巴一句 ModuleNotFoundError
@@ -162,11 +173,63 @@ def import_names(path: Path) -> set[str]:
     return {n for n in names if n not in sys.stdlib_module_names}
 
 
+# ---------------------------------------------------------------- 平台检查
+# 有少数课程只能在 Unix 上跑：用 /bin/sh 演示 Docker 的 PID 1 信号传递、
+# 用 fcntl 做文件锁。它们不是「代码有 bug」，不该被记成失败 ——
+# 否则 Windows 用户会以为整个资料包是坏的。这里静态识别并归入「跳过」。
+_UNIX_ONLY_MODULES = {"fcntl", "termios", "pwd", "grp", "resource", "pty"}
+
+
+def requires_unix(path: Path) -> str:
+    """文件是否只能在 Unix 上运行；是则返回原因，否则返回空串。"""
+    if sys.platform != "win32":
+        return ""
+
+    try:
+        source = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return ""
+
+    # 注意：这里不能复用 import_names()，因为它会把标准库模块过滤掉，
+    # 而 fcntl / termios / pwd 恰恰是「Unix 独有的**标准库**模块」——
+    # 复用会导致它们在 Windows 上被漏判，进而把「平台不支持」误记成「通过」。
+    import ast
+
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return ""
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names = [a.name for a in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            names = [node.module]
+        else:
+            continue
+        hit = sorted({n.split(".")[0] for n in names} & _UNIX_ONLY_MODULES)
+        if hit:
+            return f"仅 Unix：{', '.join(hit)}"
+
+    # 再看真实代码里的字符串字面量（注释中提及 /bin/sh 不算）
+    if '"/bin/sh"' in source or "'/bin/sh'" in source:
+        return "仅 Unix：/bin/sh"
+
+    return ""
+
+
 # ---------------------------------------------------------------- 执行器
 def run_one(path: Path, stage: str, root: Path, timeout: int) -> Result:
     """在子进程里跑一个课程文件，收集退出码与耗时。"""
     site_pkgs = str(root / "code" / "stage3_concurrent")
-    env = {**os.environ, "PYTHONPATH": site_pkgs + os.pathsep + os.environ.get("PYTHONPATH", "")}
+    # PYTHONIOENCODING / PYTHONUTF8：让子进程也用 UTF-8 输出。
+    # 否则子进程按 GBK 写中文，父进程却按 UTF-8 解码，读到的全是乱码。
+    env = {
+        **os.environ,
+        "PYTHONPATH": site_pkgs + os.pathsep + os.environ.get("PYTHONPATH", ""),
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUTF8": "1",
+    }
 
     start = time.perf_counter()
     try:
@@ -176,6 +239,12 @@ def run_one(path: Path, stage: str, root: Path, timeout: int) -> Result:
             env=env,
             capture_output=True,
             text=True,
+            # 必须显式指定编码：text=True 默认用系统 locale（中文 Windows = GBK），
+            # 而课程输出含大量 UTF-8 中文与符号，不指定会让读取线程抛
+            # UnicodeDecodeError 并导致 stderr 变空 —— 失败原因就此彻底丢失，
+            # 只能看到一句没有信息量的「退出码 1」。
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout,
         )
         elapsed = time.perf_counter() - start
@@ -255,7 +324,10 @@ def main() -> int:
         else:
             proc = subprocess.run(
                 [sys.executable, "-m", "pytest", "tests/", "-q"],
-                cwd=spiderkit, capture_output=True, text=True, timeout=300,
+                cwd=spiderkit, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
+                timeout=300,
             )
             line = [l for l in proc.stdout.strip().splitlines() if l.strip()]
             summary = line[-1] if line else "无输出"
@@ -268,6 +340,12 @@ def main() -> int:
         if stage != current:
             current = stage
             print(c(f"\n  ▸ {stage}", CYAN))
+
+        unix_reason = requires_unix(path)
+        if unix_reason:
+            report.add(Result(stage, path.name, "skip", 0.0, unix_reason))
+            print(f"    {c('⊘', YELLOW)} {path.name:<40} {c('跳过：' + unix_reason, YELLOW)}")
+            continue
 
         deps = import_names(path)
         blocked = sorted(d for d in deps if d in missing)
@@ -298,7 +376,7 @@ def main() -> int:
     print(c("=" * 68, DIM))
     print(f"  {c('通过', GREEN):<24} {len(ok):>3} 个")
     if skip:
-        print(f"  {c('跳过（缺依赖）', YELLOW):<24} {len(skip):>3} 个")
+        print(f"  {c('跳过', YELLOW):<24} {len(skip):>3} 个")
     if tmo:
         print(f"  {c('超时', YELLOW):<24} {len(tmo):>3} 个")
     if fail:
@@ -311,7 +389,7 @@ def main() -> int:
             print(f"      {c(r.detail, DIM)}")
 
     if skip:
-        print(c("\n  跳过的文件装上依赖后即可运行：", YELLOW))
+        print(c("\n  跳过的文件（缺依赖或平台不支持）：", YELLOW))
         for r in skip:
             print(f"    · {r.stage}/{r.name}  ({r.detail})")
 

@@ -60,7 +60,11 @@
 
 from __future__ import annotations
 
-import fcntl
+try:
+    import fcntl  # 仅 Unix 提供：本课用它的 flock 做跨进程文件锁
+except ImportError:  # Windows 的 Python 不带 fcntl
+    fcntl = None  # type: ignore[assignment]
+
 import json
 import multiprocessing as mp
 import os
@@ -72,6 +76,20 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable, Sequence
+
+# --- [Windows UTF-8 输出适配] ---
+# Windows 控制台默认 GBK（cp936），而本课会输出 ✓ ✗ ⚠ ▸ ✅ 等非 ASCII 符号，
+# 不处理会在打印时抛 UnicodeEncodeError 直接崩溃。这里统一切到 UTF-8，
+# 编码不了就降级替换，保证在中文 Windows 上也能完整跑完。
+import sys as _dsh_sys
+
+for _stream in (_dsh_sys.stdout, _dsh_sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError, ValueError):
+        pass  # 老解释器或已被重定向/包装的流不支持重配
+del _stream, _dsh_sys
+
 
 SEP = "=" * 76
 
@@ -1975,4 +1993,26 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if fcntl is None:
+        # 本课用 fcntl.flock 实现「JSON 文件 + 排他锁」的跨进程共享队列，
+        # 而 fcntl 是 Unix 专有模块。Windows 上给一句明确说明后正常退出，
+        # 而不是抛 ModuleNotFoundError 让人以为资料包坏了。
+        print(SEP)
+        print("阶段 6 · 第 65 课：大规模实战 —— 把前四课拼成一个真能跑的分布式爬虫")
+        print(SEP)
+        print("""
+⚠ 本课在 Windows 上无法运行，已跳过。
+
+  原因：本课用 fcntl.flock 实现「JSON 文件 + 排他锁」的跨进程共享队列，
+        而 fcntl 是 Unix 专有模块，Windows 的 Python 不提供。
+
+  这不是代码有问题，是平台限制。请在以下环境运行本课：
+      · WSL（推荐）
+      · Linux 服务器 / 容器
+      · macOS
+
+  本课正文仍可在 index.html 中阅读；
+  把共享队列换成 Redis 后，本课的架构结论同样成立。
+""")
+    else:
+        main()

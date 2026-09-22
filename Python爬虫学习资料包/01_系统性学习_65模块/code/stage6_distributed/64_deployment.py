@@ -62,6 +62,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable, Sequence
 
+# --- [Windows UTF-8 输出适配] ---
+# Windows 控制台默认 GBK（cp936），而本课会输出 ✓ ✗ ⚠ ▸ ✅ 等非 ASCII 符号，
+# 不处理会在打印时抛 UnicodeEncodeError 直接崩溃。这里统一切到 UTF-8，
+# 编码不了就降级替换，保证在中文 Windows 上也能完整跑完。
+import sys as _dsh_sys
+
+for _stream in (_dsh_sys.stdout, _dsh_sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError, ValueError):
+        pass  # 老解释器或已被重定向/包装的流不支持重配
+del _stream, _dsh_sys
+
+
 # ============================================================================
 # 输出工具
 # ============================================================================
@@ -2881,6 +2895,32 @@ def main() -> None:
     Returns:
         None
     """
+    if sys.platform == "win32":
+        # 本课的核心实验要起真实进程树，用 /bin/sh 演示 shell form 的
+        # ENTRYPOINT 会让 /bin/sh 成为容器 PID 1、从而不转发 SIGTERM。
+        # Windows 没有 /bin/sh，subprocess.Popen 会直接抛 WinError 2。
+        # 这是平台限制而非代码缺陷，给一句明确说明后正常退出。
+        print(SEP)
+        print("阶段 6 · 第 64 课：部署与容器化")
+        print(SEP)
+        print("""
+⚠ 本课在 Windows 上无法运行，已跳过。
+
+  原因：本课用真实进程树演示「容器 PID 1 收不收得到 SIGTERM」——
+        shell form 的 ENTRYPOINT 会让 /bin/sh 成为 PID 1，
+        而 Windows 没有 /bin/sh，CreateProcess 直接报
+        FileNotFoundError: [WinError 2]。
+
+  这不是代码有问题，是平台限制。请在以下环境运行本课：
+      · WSL（推荐，最接近真实容器行为）
+      · Linux 服务器 / 容器
+      · macOS
+
+  本课正文仍可在 index.html 中阅读；
+  它生成的 Dockerfile / docker-compose.yml 与平台无关，内容可直接参考。
+""")
+        return
+
     print(SEP)
     print("阶段 6 · 第 64 课：部署与容器化")
     print(SEP)

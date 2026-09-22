@@ -32,6 +32,20 @@ from playwright.async_api import (
     async_playwright,
 )
 
+# --- [Windows UTF-8 输出适配] ---
+# Windows 控制台默认 GBK（cp936），而本课会输出 ✓ ✗ ⚠ ▸ ✅ 等非 ASCII 符号，
+# 不处理会在打印时抛 UnicodeEncodeError 直接崩溃。这里统一切到 UTF-8，
+# 编码不了就降级替换，保证在中文 Windows 上也能完整跑完。
+import sys as _dsh_sys
+
+for _stream in (_dsh_sys.stdout, _dsh_sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError, ValueError):
+        pass  # 老解释器或已被重定向/包装的流不支持重配
+del _stream, _dsh_sys
+
+
 SEP = "=" * 72
 OUT = Path(__file__).parent / "playwright_out"
 
