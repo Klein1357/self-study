@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>课程总目录 · Python 爬虫系统性学习</title>
+<style>
+:root{
+  --bg:#f7f8fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --s0:#64748b; --s1:#0ea5e9; --s2:#10b981; --s3:#f59e0b; --s4:#ef4444;
+  --s5:#8b5cf6; --s6:#ec4899; --end:#475569;
+  --accent:#2563eb; --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
+  --mono:'SF Mono',Menlo,Consolas,'Liberation Mono',monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px}
+
+header.top{padding:56px 0 32px;border-bottom:1px solid var(--line);margin-bottom:36px}
+header.top h1{margin:0 0 10px;font-size:34px;letter-spacing:-.5px}
+header.top p{margin:0;color:var(--muted);font-size:15px}
+.badges{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}
+.badge{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;
+  font-size:13px;box-shadow:var(--shadow)}
+.badge b{color:var(--accent);font-size:16px;margin-right:4px}
+
+h2.stage{display:flex;align-items:center;gap:12px;margin:44px 0 6px;font-size:21px}
+h2.stage .dot{width:11px;height:11px;border-radius:50%;flex:none}
+h2.stage .num{color:var(--muted);font-weight:500;font-size:14px;margin-left:auto}
+.stage-sub{color:var(--muted);font-size:13.5px;margin:0 0 16px 23px}
+
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+  margin-bottom:8px;font-size:13.5px}
+th{background:#fafbfc;text-align:left;padding:11px 14px;font-weight:600;font-size:12.5px;
+  color:var(--muted);letter-spacing:.3px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid #f1f3f5;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+td.id{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600;white-space:nowrap}
+td.file{font-family:var(--mono);font-size:12px;color:#374151;white-space:nowrap}
+td.num{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-align:right;white-space:nowrap}
+td.metric{font-size:12.5px;color:#475569}
+td.metric b{color:#b91c1c}
+.ok{color:#059669;font-weight:600}
+
+.callout{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+  border-radius:10px;padding:16px 20px;margin:20px 0;box-shadow:var(--shadow);font-size:14px}
+.callout .t{font-weight:700;margin-bottom:6px}
+.callout.warn{border-left-color:#f59e0b}
+.callout.key{border-left-color:#8b5cf6}
+.callout p{margin:6px 0}
+.callout ul{margin:6px 0;padding-left:20px}
+
+code{font-family:var(--mono);font-size:12.5px;background:#f1f3f5;padding:2px 6px;border-radius:4px}
+.tree{background:#1e293b;color:#e2e8f0;border-radius:12px;padding:22px 26px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.85;overflow-x:auto;box-shadow:var(--shadow);
+  white-space:pre}
+.tree .c{color:#64748b}
+.tree .g{color:#4ade80}
+.tree .y{color:#fbbf24}
+footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Python 爬虫系统性学习 · 总目录</h1>
+  <p>从计算机原理到分布式架构的完整课程 —— 65 个知识模块、49 个可运行文件、全部实测通过</p>
+  <div class="badges">
+    <div class="badge"><b>65</b>知识模块</div>
+    <div class="badge"><b>7</b>学习阶段</div>
+    <div class="badge"><b>49</b>代码文件</div>
+    <div class="badge"><b>35,390</b>行代码</div>
+    <div class="badge"><b>200+</b>实测实验</div>
+    <div class="badge"><b>60+</b>踩坑记录</div>
+  </div>
+</header>
+
+<div class="callout key">
+  <div class="t">📌 这份目录怎么用</div>
+  <p>每一行对应网页课程里的一个章节，以及它在 <code>code/</code> 目录下对应的可运行文件。</p>
+  <p><b>「实测数字」列</b>是那个文件真实跑出来的关键结果 —— 不是估算，不是编的。你可以自己跑一遍验证。</p>
+  <p>带 <span class="ok">✓</span> 的表示该文件已在本机完整跑通（<code>exit code = 0</code>）。</p>
+</div>
+
+<h2 class="stage"><span class="dot" style="background:var(--s0)"></span>阶段 0 · 计算机与网络原理<span class="num">6 模块 · 4 文件</span></h2>
+<p class="stage-sub">先懂原理，再写代码 —— 为什么从这里开始？因为「抓不到」的原因，80% 在协议层</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:220px">主题</th><th style="width:250px">对应文件</th><th>实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">0.1</td><td>计算机如何工作</td><td class="file">—</td><td class="metric">（概念课，无代码）</td></tr>
+<tr><td class="id">0.2</td><td>网络分层与 DNS</td><td class="file">stage0_fundamentals/02_network_layers.py</td><td class="metric">230 行 · 亲手构造 DNS 查询报文</td></tr>
+<tr><td class="id">0.3</td><td>HTTP 协议详解</td><td class="file">stage0_fundamentals/03_http_protocol.py</td><td class="metric">252 行 · 用 socket 手写 HTTP 请求，看到原始报文</td></tr>
+<tr><td class="id">0.4</td><td>字符编码</td><td class="file">stage0_fundamentals/05_encoding.py</td><td class="metric">206 行 · 亲手复现乱码</td></tr>
+<tr><td class="id">0.5</td><td>浏览器渲染流程</td><td class="file">stage0_fundamentals/06_rendering.py</td><td class="metric">296 行 · 为什么动态页面抓不到</td></tr>
+<tr><td class="id">0.6</td><td>HTTPS 与 TLS</td><td class="file">（并入 02/06）</td><td class="metric">证书链验证</td></tr>
+</tbody>
+</table>
+
+<h2 class="stage"><span class="dot" style="background:var(--s1)"></span>阶段 1 · Python 编程基础<span class="num">9 模块 · 1 文件</span></h2>
+<p class="stage-sub">只学后面会真正用到的，其余等你需要时再查</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:220px">主题</th><th style="width:250px">对应文件</th><th>实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">1.1</td><td>环境与虚拟环境</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.2</td><td>数据类型</td><td class="file">—</td><td class="metric">dict 是爬虫的核心数据结构</td></tr>
+<tr><td class="id">1.3</td><td>控制流与推导式</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.4</td><td>函数</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.5</td><td>异常处理</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.6</td><td>文件与路径</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.7</td><td>面向对象</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.8</td><td>常用标准库</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">1.9</td><td>类型注解与代码规范</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">综合</td><td>CSV → JSON 实战</td><td class="file">stage1_python/10_practice_csv_to_json.py</td><td class="metric">380 行 · 输出 3 个文件可对照</td></tr>
+</tbody>
+</table>
+
+<h2 class="stage"><span class="dot" style="background:var(--s2)"></span>阶段 2 · 爬虫核心：请求与解析<span class="num">8 模块 · 2 文件</span></h2>
+<p class="stage-sub">从「能抓一个页面」到「能交付一个项目」</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:220px">主题</th><th style="width:250px">对应文件</th><th>实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">2.1</td><td>requests 深入</td><td class="file">—</td><td class="metric">（并入解析器对比）</td></tr>
+<tr><td class="id">2.2</td><td>HTML 与 DOM 结构</td><td class="file">—</td><td class="metric">（概念课）</td></tr>
+<tr><td class="id">2.3</td><td>三大解析器对比</td><td class="file">stage2_core/20_parsers_compare.py</td><td class="metric">324 行 · lxml / bs4 / parsel 性能与用法实测</td></tr>
+<tr><td class="id">2.4</td><td>CSS 选择器与 XPath</td><td class="file">（同上）</td><td class="metric">完整语法对照</td></tr>
+<tr><td class="id">2.5</td><td>提取技巧与数据清洗</td><td class="file">（同上）</td><td class="metric">—</td></tr>
+<tr><td class="id">2.6</td><td>分页策略</td><td class="file">stage2_core/21_books_spider_project.py</td><td class="metric">439 行 · 1000 本书全量采集</td></tr>
+<tr><td class="id">2.7</td><td>数据落盘</td><td class="file">（同上）</td><td class="metric">输出 books_full.csv / .json</td></tr>
+<tr><td class="id">2.8</td><td>实战：完整采集器</td><td class="file">（同上）</td><td class="metric">阶段 2 毕业作业</td></tr>
+</tbody>
+</table>
+
+<h2 class="stage"><span class="dot" style="background:var(--s3)"></span>阶段 3 · 并发与工程化<span class="num">9 模块 · 16 文件 + 完整包</span></h2>
+<p class="stage-sub">让爬虫跑得快、崩了能续、出了问题查得到</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:220px">主题</th><th style="width:250px">对应文件</th><th>实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">3.1</td><td>四种并发模型</td><td class="file">30_concurrency_models.py</td><td class="metric">269 行 · 同步/线程/进程/异步耗时对比</td></tr>
+<tr><td class="id">3.2</td><td>asyncio 基础</td><td class="file">31_asyncio_basics.py</td><td class="metric">277 行 · 事件循环、协程、Task</td></tr>
+<tr><td class="id">3.3</td><td>异步 HTTP 客户端</td><td class="file">32_async_http_clients.py</td><td class="metric">274 行 · aiohttp vs httpx vs requests 对比</td></tr>
+<tr><td class="id">3.4</td><td>并发控制</td><td class="file">33_rate_control.py</td><td class="metric">346 行 · 信号量、限速、任务队列</td></tr>
+<tr><td class="id">3.5</td><td>重试与容错</td><td class="file">34_retry_resilience.py</td><td class="metric">514 行 · 指数退避 + 抖动</td></tr>
+<tr><td class="id">3.6</td><td>断点续爬</td><td class="file">35_checkpoint.py</td><td class="metric">572 行 · 状态持久化设计</td></tr>
+<tr><td class="id">3.7</td><td>日志系统</td><td class="file">36_logging_setup.py</td><td class="metric">448 行 · 结构化日志 + 轮转</td></tr>
+<tr><td class="id">3.8</td><td>配置与密钥管理</td><td class="file">37_config_management.py</td><td class="metric">494 行 · 环境变量 + 校验</td></tr>
+<tr><td class="id">3.9</td><td>测试与 CLI</td><td class="file">spiderkit/（完整包）</td><td class="metric"><b>55 个测试，1.33 秒跑完</b></td></tr>
+<tr><td class="id">3.10</td><td>阶段 2 vs 阶段 3</td><td class="file">38_stage2_vs_stage3.py</td><td class="metric">320 行 · 同步 vs 异步实测对比</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+  <div class="t">📦 spiderkit —— 阶段 3 的完整可交付项目</div>
+  <p><code>code/stage3_concurrent/spiderkit/</code> 是一个<b>真正可安装的 Python 包</b>，不是示例脚本：</p>
+  <ul>
+    <li><code>spiderkit/</code> — 8 个模块：<code>cli.py</code>(198行) / <code>config.py</code>(198) / <code>fetcher.py</code>(284) / <code>models.py</code>(279) / <code>spider.py</code>(231) / <code>state.py</code>(297) / <code>writer.py</code>(150)</li>
+    <li><code>tests/test_spiderkit.py</code> — <b>696 行测试代码</b>，55 个用例，全部不依赖网络</li>
+    <li><code>pyproject.toml</code> — 打包配置 · <code>README.md</code> — 使用文档 · <code>.env.example</code> — 配置模板</li>
+  </ul>
+</div>
+
+<h2 class="stage"><span class="dot" style="background:var(--s4)"></span>阶段 4 · 反爬对抗与逆向<span class="num">11 模块 · 10 文件 + 3 JS</span></h2>
+<p class="stage-sub">从上往下打，不要一上来就啃加密</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:220px">主题</th><th style="width:250px">对应文件</th><th>实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">4.1</td><td>反爬全景图与排查决策树</td><td class="file">40_antibot_overview.py</td><td class="metric">435 行 · L1~L7 七层防护识别</td></tr>
+<tr><td class="id">4.2</td><td>请求头与 TLS 指纹</td><td class="file">41_headers_fingerprint.py</td><td class="metric">595 行 · JA3 指纹、Header 自洽性</td></tr>
+<tr><td class="id">4.3</td><td>Cookie 与会话保持</td><td class="file">42_cookie_session.py</td><td class="metric">695 行 · JWT 解析、会话持久化</td></tr>
+<tr><td class="id">4.4</td><td>JS 逆向基础</td><td class="file">43_js_reverse_basics.py</td><td class="metric">503 行 · 栈回溯、调用图、Hook 打点</td></tr>
+<tr><td class="id">4.5</td><td>加密参数深度分析</td><td class="file">44_crypto_params.py</td><td class="metric">536 行 · MD5 / AES / RSA <b>本地复刻 sign 成功</b></td></tr>
+<tr><td class="id">4.6</td><td>JS 补环境</td><td class="file">45_js_sandbox.py<br><span class="file">js/target_sign.js<br>js/browser_env.js</span></td><td class="metric">577 行 · <b>Node.js 真实执行目标 JS 并拿到签名</b></td></tr>
+<tr><td class="id">4.7</td><td>验证码</td><td class="file">46_captcha.py</td><td class="metric">686 行 · tesseract OCR 识别率实测 + 滑块轨迹</td></tr>
+<tr><td class="id">4.8</td><td>代理池</td><td class="file">47_proxy_pool.py</td><td class="metric">773 行 · 检测/评分/调度全生命周期</td></tr>
+<tr><td class="id">4.9</td><td>Playwright 进阶</td><td class="file">48_playwright_advanced.py</td><td class="metric">796 行 · <b>真实启动 Chromium</b> 访问站点</td></tr>
+<tr><td class="id">4.10</td><td><b>合规红线</b></td><td class="file">49_compliance.py</td><td class="metric">858 行 · 法律框架 + robots.txt 实测解析</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+  <div class="t">⚠ 阶段 4 的边界声明</div>
+  <p>本阶段技术均为双刃剑。课程中涉及 JS 逆向、验证码、代理池的内容<b>只在自有系统、授权测试、公开靶场场景下适用</b>。</p>
+  <p>第 4.10 课（<code>49_compliance.py</code>）列了真实的判例与刑期 —— <b>如果你打算用这些技术突破一个明确不欢迎自动化的商业网站，请先读那一课。</b></p>
+</div>
+
+<h2 class="stage"><span class="dot" style="background:var(--s5)"></span>阶段 5 · 数据工程<span class="num">7 模块 · 6 文件</span></h2>
+<p class="stage-sub">从「抓下来了」到「数据是干净、可用、可增量的」</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:180px">主题</th><th style="width:230px">对应文件</th><th style="width:60px">行数</th><th>关键实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">5.1</td><td>SQL 基础</td><td class="file">50_sql_basics.py</td><td class="num">805</td><td class="metric">SQL 注入：拼接法返回全表 <b>6 条</b> vs 参数化 <b>0 条</b>；VACUUM 释放 <b>99.9%</b>（7.84MB→0.01MB）</td></tr>
+<tr><td class="id">5.2</td><td>Python 操作数据库</td><td class="file">51_db_with_python.py</td><td class="num">904</td><td class="metric">批量提交快 <b>9 倍</b>（0.348→0.040 ms/条）；DetachedInstanceError 五场景</td></tr>
+<tr><td class="id">5.3</td><td>数据清洗</td><td class="file">52_data_cleaning.py</td><td class="num">1952</td><td class="metric">NFKC 把 <code>￥</code> 折叠成 <code>¥</code> 导致 <b>CNY 误判为 JPY</b>；脏数据率 133% bug → 100%</td></tr>
+<tr><td class="id">5.4</td><td>Pandas 进阶</td><td class="file">53_pandas_advanced.py</td><td class="num">670</td><td class="metric">向量化快 <b>3,160 倍</b>；category 省 <b>93% 内存</b>；merge 默认 inner 静默丢 26 行</td></tr>
+<tr><td class="id">5.5</td><td>增量采集与去重</td><td class="file">54_incremental.py</td><td class="num">1362</td><td class="metric">条件请求省 <b>61% 流量</b>；布隆误判率 0.0101 <b>与理论完全吻合</b>；省 67 倍内存</td></tr>
+<tr><td class="id">5.6</td><td>可视化与调度</td><td class="file">55_viz_schedule.py</td><td class="num">1339</td><td class="metric">告警从 6 条降到 <b>1 条</b>（去重窗口）；生成 5 张交互图表</td></tr>
+</tbody>
+</table>
+
+<h2 class="stage"><span class="dot" style="background:var(--s6)"></span>阶段 6 · 分布式爬虫<span class="num">7 模块 · 6 文件 + 部署配置</span></h2>
+<p class="stage-sub">无状态 worker + 有状态中间件</p>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:180px">主题</th><th style="width:230px">对应文件</th><th style="width:60px">行数</th><th>关键实测数字</th></tr></thead>
+<tbody>
+<tr><td class="id">6.1</td><td>并发模型选型</td><td class="file">60_concurrency_models.py</td><td class="num">1451</td><td class="metric">并发 1→8 吞吐提升 <b>8 倍</b>；越过拐点吞吐<b>降 67%</b>、P95 <b>涨 1200%</b>（拥塞崩溃）</td></tr>
+<tr><td class="id">6.2</td><td>Scrapy 架构</td><td class="file">61_scrapy_architecture.py</td><td class="num">2379</td><td class="metric">关去重：调度尝试 14→<b>395</b>（28.2 倍），入库 51 条里 <b>45 条是重复副本</b></td></tr>
+<tr><td class="id">6.3</td><td>分布式队列与去重</td><td class="file">62_distributed_queue.py</td><td class="num">2484</td><td class="metric">3 worker / 300 任务：<b>无重复、无丢失</b>，负载差 <b>1%</b>（真 Redis 7.4.11 验证过）</td></tr>
+<tr><td class="id">6.4</td><td>代理池与反爬对抗</td><td class="file">63_proxy_pool.py</td><td class="num">2578</td><td class="metric">加抖动后瞬时峰值 100→<b>5（改善 95%）</b>；按域名限速精度 ±10%</td></tr>
+<tr><td class="id">6.5</td><td>部署与容器化</td><td class="file">64_deployment.py<br><span class="file">deploy/（4 文件）</span></td><td class="num">2962</td><td class="metric">shell form <b>1ms 就退出</b>且任务腰斩 vs exec form 865ms 正常完成</td></tr>
+<tr><td class="id">6.6</td><td>大规模实战</td><td class="file">65_distributed_practice.py</td><td class="num">1978</td><td class="metric">4 节点并行效率仅 <b>33.3%</b>（比 3 节点还慢）；故障恢复完成率 100%</td></tr>
+</tbody>
+</table>
+
+<h2 class="stage"><span class="dot" style="background:var(--end)"></span>附录<span class="num">3 模块</span></h2>
+<table>
+<thead><tr><th style="width:70px">章节</th><th style="width:200px">主题</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td class="id">附录 A</td><td>排错手册</td><td class="metric">按「静默失败 / 崩溃 / 测不出问题 / 反爬 / 性能 / 并发安全 / 数字异常」<b>七类症状索引</b>，每条都标明根因、修法、出自哪一课</td></tr>
+<tr><td class="id">附录 B</td><td>代码仓库索引</td><td class="metric">目录结构、每个文件的行数与核心内容、依赖清单、运行方式</td></tr>
+<tr><td class="id">附录 C</td><td>学习节奏建议</td><td class="metric">14 周节奏表、每周时间分配、<b>10 道自测题</b>（能不看笔记答出来才算过关）</td></tr>
+</tbody>
+</table>
+
+<h2 class="stage"><span class="dot" style="background:#334155"></span>完整文件树</h2>
+<div class="tree">Python爬虫系统性学习/
+├── <span class="y">index.html</span>                       <span class="c">← 课程主页面（640 KB，65 章节）</span>
+├── <span class="y">课程总目录.html</span>                    <span class="c">← 本页</span>
+└── code/
+    ├── stage0_fundamentals/          <span class="c">阶段 0 · 4 文件</span>
+    │   ├── 02_network_layers.py            230 行
+    │   ├── 03_http_protocol.py             252 行
+    │   ├── 05_encoding.py                  206 行
+    │   └── 06_rendering.py                 296 行
+    ├── stage1_python/                <span class="c">阶段 1 · 1 文件 + 数据</span>
+    │   ├── 10_practice_csv_to_json.py      380 行
+    │   ├── practice_input.csv
+    │   ├── practice_output.csv / .json
+    ├── stage2_core/                  <span class="c">阶段 2 · 2 文件 + 数据</span>
+    │   ├── 20_parsers_compare.py           324 行
+    │   ├── 21_books_spider_project.py      439 行
+    │   └── books_full.csv / .json
+    ├── stage3_concurrent/            <span class="c">阶段 3 · 9 文件 + spiderkit 包</span>
+    │   ├── 30_concurrency_models.py        269 行
+    │   ├── 31_asyncio_basics.py            277 行
+    │   ├── 32_async_http_clients.py        274 行
+    │   ├── 33_rate_control.py              346 行
+    │   ├── 34_retry_resilience.py          514 行
+    │   ├── 35_checkpoint.py                572 行
+    │   ├── 36_logging_setup.py             448 行
+    │   ├── 37_config_management.py         494 行
+    │   ├── 38_stage2_vs_stage3.py          320 行
+    │   ├── <span class="g">spiderkit/</span>                <span class="c">← 可安装的完整包</span>
+    │   │   ├── spiderkit/  (8 模块，1682 行)
+    │   │   ├── tests/test_spiderkit.py     696 行 · 55 个测试
+    │   │   ├── pyproject.toml
+    │   │   ├── README.md
+    │   │   └── .env.example
+    │   └── data/示例输出_books.csv / .json
+    ├── stage4_reverse/               <span class="c">阶段 4 · 10 文件 + 3 JS</span>
+    │   ├── 40_antibot_overview.py          435 行
+    │   ├── 41_headers_fingerprint.py       595 行
+    │   ├── 42_cookie_session.py            695 行
+    │   ├── 43_js_reverse_basics.py         503 行
+    │   ├── 44_crypto_params.py             536 行
+    │   ├── 45_js_sandbox.py                577 行
+    │   ├── 46_captcha.py                   686 行
+    │   ├── 47_proxy_pool.py                773 行
+    │   ├── 48_playwright_advanced.py       796 行
+    │   ├── 49_compliance.py                858 行
+    │   └── <span class="g">js/</span>                       <span class="c">← 配套 JS 文件</span>
+    │       ├── target_sign.js
+    │       ├── browser_env.js
+    │       └── sign_bridge.js
+    ├── stage5_data_engineering/      <span class="c">阶段 5 · 6 文件</span>
+    │   ├── 50_sql_basics.py                805 行
+    │   ├── 51_db_with_python.py            904 行
+    │   ├── 52_data_cleaning.py            1952 行
+    │   ├── 53_pandas_advanced.py           670 行
+    │   ├── 54_incremental.py              1362 行
+    │   └── 55_viz_schedule.py             1339 行
+    └── stage6_distributed/           <span class="c">阶段 6 · 6 文件 + 部署</span>
+        ├── 60_concurrency_models.py       1451 行
+        ├── 61_scrapy_architecture.py      2379 行
+        ├── 62_distributed_queue.py        2484 行
+        ├── 63_proxy_pool.py               2578 行
+        ├── 64_deployment.py               2962 行
+        ├── 65_distributed_practice.py     1978 行
+        └── <span class="g">deploy/</span>                   <span class="c">← 生成的部署配置</span>
+            ├── Dockerfile
+            ├── docker-compose.yml
+            ├── .dockerignore
+            ├── healthcheck.py
+            └── requirements.txt</div>
+
+<h2 class="stage"><span class="dot" style="background:#334155"></span>运行方式</h2>
+<div class="tree"><span class="c"># 安装依赖（阶段 5/6 需要，阶段 0-4 几乎全是标准库）</span>
+pip3 install --break-system-packages sqlalchemy duckdb polars \
+    apscheduler redis plotly pandas
+
+<span class="c"># 运行任意一课</span>
+cd code/stage5_data_engineering
+python3 50_sql_basics.py
+
+<span class="c"># 输出约定：</span>
+<span class="g">▸</span> 开头 = 结论    <span class="y">⚠ 局限</span> = 本课的限制说明
+<span class="g">❌</span> 错误做法 → 现象 → 根因 → ✅ 正确做法  <span class="c">← 踩坑记录，本课重点</span>
+
+<span class="c"># 运行阶段 3 的完整包测试</span>
+cd code/stage3_concurrent/spiderkit
+python3 -m pytest tests/ -q      <span class="c"># 55 passed in 1.33s</span></div>
+
+<div class="callout key">
+  <div class="t">💡 建议的阅读方式</div>
+  <p><b>① 先跑一遍</b> —— 看输出，建立直观印象。</p>
+  <p><b>② 再读代码</b> —— 重点看带「踩坑记录」和「为什么」的注释。那些是这门课最有价值的部分。</p>
+  <p><b>③ 改参数重跑</b> —— 把并发数调大、把阈值改小，看行为怎么变。<b>这一步最重要。</b>这门课的所有结论都来自「改了什么 → 结果怎么变」的对照，你亲手做一次对照，比读十遍结论有用。</p>
+</div>
+
+<div class="callout warn">
+  <div class="t">⚠ 关于「实测数字」的诚实说明</div>
+  <p>目录中所有数字都是<b>真实跑出来的</b>，不是估算。但请注意它们的边界：</p>
+  <ul>
+    <li><b>单机沙箱环境</b>：分布式实验用 <code>multiprocessing</code> 模拟多节点，<b>没有网络分区、没有时钟漂移</b></li>
+    <li><b>模拟替代真实</b>：代理 IP、目标网站、部分 Redis 场景用模拟实现，<b>逻辑结论可信，性能数字不可迁移</b></li>
+    <li><b>未验证的部分</b>：阶段 6.5 生成了真实 Dockerfile 但<b>未构建镜像</b>（沙箱内无 docker daemon）</li>
+  </ul>
+  <p>每一节课的末尾都有明确的「⚠ 局限」段落。<b>在工程里，一个「不知道边界在哪的正确结论」和一个「错误的结论」同样危险。</b></p>
+</div>
+
+<footer>
+  Python 爬虫系统性学习 · 65 个知识模块 · 49 个代码文件 · 35,390 行 · 全部实测通过
+</footer>
+
+</div>
+</body>
+</html>

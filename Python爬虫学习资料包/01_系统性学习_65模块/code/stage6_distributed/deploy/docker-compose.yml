@@ -1,0 +1,92 @@
+# 爬虫系统的 docker-compose.yml（由 64_deployment.py 自动生成）
+#
+# 使用方法：
+#   docker compose up -d          # 后台启动全栈
+#   docker compose logs -f spider # 跟踪爬虫日志
+#   docker compose down           # 停止并删除容器
+#
+# ⚠ 本文件不会被本课真的执行（见模块开头的局限声明）。
+
+services:
+  # ----------------------------------------------------------------
+  # Redis：分布式队列 + 去重集合（第 62 课讲过它的两个核心用途）
+  # ----------------------------------------------------------------
+  redis:
+    image: redis:7.4-alpine
+    # ★ 为什么必须显式设置 maxmemory-policy？
+    #   Redis 默认策略是 noeviction（内存满了返回错误），
+    #   这**恰好是我们要的**：队列里的任务绝不能被静默淘汰。
+    #   但很多人用云 Redis 时被默认配成 allkeys-lru，
+    #   结果跑去一半的任务凭空消失，而且**不报错**。
+    #   第 62 课讲过这个坑，这里再强调一次。
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy noeviction
+      --save 60 1000
+    volumes:
+      # 持久化：容器删了数据还在。爬虫的队列状态绝不能丢。
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------------
+  # 爬虫主进程
+  # ----------------------------------------------------------------
+  spider:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # ★ 依赖 Redis 的**健康状态**，而不只是「已启动」
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      # ★ 十二要素之三：配置来自环境变量，不来自代码里的常量
+      # 密码从 .env 文件注入（.env 不进版本库、不进镜像）
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # 并发与限速（第 60/63 课的配置项）
+      CONCURRENCY: ${CONCURRENCY:-16}
+      GLOBAL_QPS: ${GLOBAL_QPS:-10}
+      # 优雅关闭的等待上限（秒）。必须 <= stop_grace_period
+      SHUTDOWN_TIMEOUT: ${SHUTDOWN_TIMEOUT:-25}
+    # ★ 默认 10 秒太短：一次请求可能就要 30 秒。
+    #   设得比 SHUTDOWN_TIMEOUT 略大，留出收尾时间。
+    stop_grace_period: 30s
+    restart: unless-stopped
+    # 爬虫需要「可写」时只写自己的数据目录，其他全部只读
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - spider-data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------
+  # 监控（第 55 课的看板思路 + 第 65 课的指标）
+  # ----------------------------------------------------------------
+  # ⚠ 本课不实现 Prometheus exporter，只演示它该放在哪。
+  #   生产环境的爬虫应该暴露 /metrics 端点，让 Prometheus 抓取：
+  #     抓取成功率、队列深度、去重命中率、平均延迟、被封代理数。
+
+volumes:
+  redis-data:
+  spider-data:

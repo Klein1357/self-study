@@ -1,0 +1,11 @@
+# 爬虫依赖（由 64_deployment.py 自动生成）
+# ⚠ 全部钉死版本：镜像必须是可复现的，
+#   `>=` 会让半年后的构建得到不同的依赖，从而导致「同样的代码表现不一样」。
+
+requests==2.32.3
+lxml==5.2.2
+redis==5.0.7
+
+# 说明：生产环境应进一步使用 lock 文件锁定全部传递依赖，
+# 例如：pip-compile requirements.in > requirements.txt
+# 或：poetry export -f requirements.txt --output requirements.txt
